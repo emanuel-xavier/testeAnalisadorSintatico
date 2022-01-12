@@ -55,7 +55,7 @@ and tree_of_fundec (typeid, params, body) =
 and tree_of_program (Program fundecs) =
   mktree "Program" (List.map tree_of_lfundec fundecs)
 
-and tree_of_typeid (type_, (_loc, id)) =
+and tree_of_typeid (type_, id) =
   mkleaf (sprintf "%s:%s" (name id) (stringify_type_ type_))
 
 (* Convert an anotated ast to a generic tree *)
