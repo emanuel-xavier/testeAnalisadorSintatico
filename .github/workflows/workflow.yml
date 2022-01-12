@@ -32,7 +32,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          opam install dune ppx_import ppx_deriving ppx_expect menhir camomile 
+          opam install dune ppx_import ppx_deriving ppx_expect menhir
 
       - name: Build
         run: |
