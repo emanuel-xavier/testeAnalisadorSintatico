@@ -19,40 +19,37 @@
 
 %start <Absyn.lprogram> program
 
+%right ELSE IN
+%nonassoc LT
+%left PLUS
+
 %%
 
 (* write the missing production rules *)
-
 program:
-| x=funs EOF { x }
-
-exp:
-| x=LITINT                       { $loc , Absyn.IntExp x           }
-| x=ID                           { $loc , Absyn.VarExp x           }
-| x=exp op=operator y=exp        { $loc , Absyn.OpExp (op, x, y)   }
-| IF x=exp THEN y=exp ELSE z=exp { $loc , Absyn.IfExp (x, y, z)    }
-| x=ID LPAREN f=exps RPAREN      { $loc , Absyn.CallExp (x, f)     }
-| LET i=ID EQ f=exp IN ff=exp    { $loc , Absyn.LetExp (i, f, ff)  }  
-
-exps:
-| x=separated_nonempty_list(COMMA, exp) { x }
-
-%inline operator:
-| PLUS { Absyn.Plus }
-| LT   { Absyn.LT }
+    | seq=nonempty_list(fundec) EOF { ($loc , Absyn.Program (seq)) }
 
 fundec:
-| x=typeid LPAREN p=typeids RPAREN EQ b=exp { $loc , (x, p, b) }
-
-funs:
-| x=fundecs { $loc, Absyn.Program x }
-
-fundecs:
-| x=nonempty_list(fundec) { x }
+    | t=typeid LPAREN l=typeidlist RPAREN EQ e=exp { $loc , (t, l, e) }
 
 typeid:
-| INT x=ID   { (Absyn.Int, x) }
-| BOOL x= ID { (Absyn.Bool, x) }
+    | INT var=ID   { (Absyn.Int, ($loc, var)) }
+    | BOOL var= ID { (Absyn.Bool, ($loc, var)) }
 
-typeids:
-| x=separated_nonempty_list(COMMA, typeid) { x }
+typeidlist:
+    | l=separated_nonempty_list(COMMA, typeid) { l }
+
+exp:
+    | a=LITINT { $loc , Absyn.IntExp a }
+    | a=ID { $loc , Absyn.VarExp a }
+    | e1=exp op=operator e2=exp { $loc , Absyn.OpExp (op, e1, e2) }
+    | IF e1=exp THEN e2=exp ELSE e3=exp { $loc , Absyn.IfExp (e1, e2, e3) }
+    | a=ID LPAREN l=explist RPAREN { $loc , Absyn.CallExp (a, l) }
+    | LET a=ID EQ e1=exp IN e2=exp { $loc , Absyn.LetExp (a, e1, e2) }
+
+explist:
+    | l=separated_nonempty_list(COMMA, exp) { l }
+
+%inline operator:
+    | PLUS { Absyn.Plus }
+    | LT   { Absyn.LT }

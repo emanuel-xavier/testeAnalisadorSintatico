@@ -25,12 +25,19 @@ and program =
   | Program of lfundec list
   [@@deriving show]
 
-and fundec = (type_ * symbol) * (type_ * symbol) list * lexp
+and fundec = typeid * typeid list * lexp
   [@@deriving show]
 
 and type_ =
   | Int
   | Bool
+  [@@deriving show]
+
+and typeid = type_ * lsymbol
+  [@@deriving show]
+
+
+and lsymbol = symbol loc
   [@@deriving show]
 
 and lexp = exp loc
